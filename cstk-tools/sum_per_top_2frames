@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Print the sum of samples per 2 top frames in descending order
+#
+# Expected usage (print top 20 hot "itable stub" callers):
+# $ cat a.cstk | grep "itable stub" | ./sum_per_top_2frames | head -n 20
+#  1588  org/apache/cassandra/utils/flow/Flow$Map::onFinal_[j];itable stub 
+#  836   org/apache/cassandra/utils/flow/FlowTransformNext::onSubscribe_[j];itable stub 
+#  790   org/apache/cassandra/concurrent/EpollTPCEventLoopGroup$SingleCoreEventLoop::processEvents_[j];itable stub 
+#  665   org/apache/cassandra/utils/flow/FlatMap::requestFirst_[j];itable stub 
+#  643   org/apache/cassandra/utils/flow/FlowTransformNext::requestFirst_[j];itable stub 
+#  643   io/reactivex/Single::subscribe_[j];itable stub 
+#  556   io/reactivex/internal/observers/ResumeSingleObserver::onSuccess_[i];itable stub 
+#  497   org/apache/cassandra/utils/flow/Flow$1SingleFromFlow$1ReduceToSingle::signalSuccess_[i];itable stub 
+#  495   org/apache/cassandra/utils/flow/Flow$IteratorSubscription::requestNext_[j];itable stub 
+#  484   org/apache/cassandra/utils/flow/FlatMap$FlatMapChild::onNext_[i];itable stub 
+#  464   org/apache/cassandra/utils/flow/FlatMap::onComplete_[j];itable stub 
+#  439   org/apache/cassandra/utils/flow/Flow$1Reduce::onComplete_[j];itable stub 
+#  432   io/reactivex/internal/operators/single/SingleFlatMap$SingleFlatMapCallback$FlatMapSingleObserver::onSuccess_[i];itable stub 
+#  424   org/apache/cassandra/utils/flow/FlatMap::close_[j];itable stub 
+#  423   org/apache/cassandra/utils/flow/Flow$ReduceSubscriber::close_[i];itable stub 
+#  421   org/apache/cassandra/utils/flow/FlatMap::requestNext_[j];itable stub 
+#  420   io/netty/channel/AbstractChannelHandlerContext::invokeChannelRead_[i];itable stub 
+#  384   org/apache/cassandra/utils/flow/FlowTransform::subscribe_[i];itable stub 
+#  377   io/reactivex/internal/operators/single/SingleDefer::subscribeActual_[j];itable stub 
+#  356   org/apache/cassandra/utils/flow/Flow$1Reduce::onComplete_[i];itable stub
+awk '{ fNum = split(substr($0,0,length($0)-length($NF)),frames,";"); a[(frames[fNum-1] ";" frames[fNum])] += $NF } END { for (i in a) { printf "%-15s\t%s\n", a[i], i; } }' | sort -g -r

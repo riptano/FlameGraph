@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Print the sum of samples per 3 top frames in descending order
+#
+# Expected usage (print top 20 hot "<init>" callers):
+# $ cat a.cstk | grep "\<init" | ./sum_per_top_3frames | head -n 20
+#  2171 io/netty/util/concurrent/FastThreadLocal::get_[i];io/netty/util/concurrent/FastThreadLocal::registerCleaner_[i];io/netty/util/concurrent/FastThreadLocal$1::<init>_[i] 
+#  856  java/lang/invoke/LambdaForm$DMH/892529689::invokeStatic_L_L_[i];org/apache/cassandra/metrics/Meter$$Lambda$184/1454171136::get$Lambda_[i];org/apache/cassandra/metrics/Meter$$Lambda$184/1454171136::<init>_[i] 
+#  778  org/apache/cassandra/utils/flow/DeferredFlowImpl::startTimeoutTask_[i];org/apache/cassandra/concurrent/TPCTimeoutTask::<init>_[i];org/apache/cassandra/concurrent/TPCTimeoutTask::<init>_[i] 
+#  749  org/apache/cassandra/utils/flow/FlowTransformNext::<init>_[i];org/apache/cassandra/utils/flow/FlowTransformBase::<init>_[i];org/apache/cassandra/utils/flow/Flow$RequestLoopFlow::<init>_[i] 
+#  705  java/util/Arrays::binarySearch_[i];java/util/Arrays::binarySearch0_[i];org/apache/cassandra/db/ClusteringComparator::compare_[j] 
+#  690  java/lang/invoke/LambdaForm$DMH/2126351173::invokeStatic_L3IL3_L_[i];org/apache/cassandra/db/rows/AbstractRow$$Lambda$350/1640562135::get$Lambda_[i];org/apache/cassandra/db/rows/AbstractRow$$Lambda$350/1640562135::<init>_[i] 
+#  684  java/lang/invoke/LambdaForm$DMH/94345706::invokeStatic_LL_L_[i];org/apache/cassandra/transport/ServerConnection$$Lambda$875/1049855034::get$Lambda_[i];org/apache/cassandra/transport/ServerConnection$$Lambda$875/1049855034::<init>_[i] 
+#  602  io/netty/buffer/PooledUnsafeDirectByteBuf::init_[i];io/netty/buffer/PooledByteBuf::init_[i];io/netty/buffer/PooledByteBuf::init0_[i] 
+#  597  org/apache/cassandra/cql3/statements/SelectStatement::getQuery_[i];org/apache/cassandra/cql3/statements/SelectStatement::getSliceCommands_[j];java/util/ArrayList::<init>_[i] 
+#  588  java/lang/invoke/LambdaForm$DMH/892529689::invokeStatic_L_L_[i];org/apache/cassandra/db/Columns$$Lambda$349/1946841162::get$Lambda_[i];org/apache/cassandra/db/Columns$$Lambda$349/1946841162::<init>_[i] 
+#  586  org/apache/cassandra/concurrent/TPCRunnable::wrap_[i];org/apache/cassandra/concurrent/TPCRunnable::<init>_[i];org/apache/cassandra/concurrent/TPCMetricsAndLimits::scheduled_[i] 
+#  560  org/apache/cassandra/db/partitions/ArrayBackedPartition::sliceIterator_[i];org/apache/cassandra/db/partitions/ArrayBackedPartition::merge_[j];org/apache/cassandra/db/rows/RowAndDeletionMergeIterator::<init>_[j] 
+#  543  org/apache/cassandra/db/partitions/AtomicBTreePartition$AtomicBTreePartitionOnHeap::searchIterator_[i];org/apache/cassandra/db/partitions/AbstractBTreePartition::searchIterator_[i];org/apache/cassandra/db/partitions/AbstractBTreePartition$1::<init>_[i] 
+#  537  org/apache/cassandra/concurrent/StagedScheduler$1::execute_[j];org/apache/cassandra/concurrent/TPCRunnable::wrap_[i];org/apache/cassandra/concurrent/TPCRunnable::<init>_[i] 
+#  510  org/apache/cassandra/db/partitions/ArrayBackedPartition::merge_[j];org/apache/cassandra/db/rows/RowAndDeletionMergeIterator::<init>_[j];org/apache/cassandra/db/rows/AbstractUnfilteredRowIterator::<init>_[i] 
+#  487  org/apache/cassandra/db/ReadCommand$1MetricRecording::countRow_[i];org/apache/cassandra/db/rows/ArrayBackedRow::reduceCells_[i];org/apache/cassandra/db/rows/ArrayBackedRow$2::<init>_[i] 
+#  448  java/lang/invoke/LambdaForm$DMH/258754732::invokeStatic_L5_L_[i];org/apache/cassandra/db/partitions/ArrayBackedPartition$$Lambda$646/1000383537::get$Lambda_[i];org/apache/cassandra/db/partitions/ArrayBackedPartition$$Lambda$646/1000383537::<init>_[i] 
+#  442  org/apache/cassandra/db/ColumnFamilyStore::select_[i];com/google/common/collect/Lists::newArrayList_[i];java/util/ArrayList::<init>_[i] 
+#  439  org/apache/cassandra/db/SinglePartitionReadCommand$$Lambda$294/1796545348::get$Lambda_[i];org/apache/cassandra/db/SinglePartitionReadCommand$$Lambda$294/1796545348::<init>_[i];java/lang/Object::<init>_[i] 
+#  435  java/lang/invoke/LambdaForm$DMH/892529689::invokeStatic_L_L_[i];org/apache/cassandra/cql3/statements/SelectStatement$$Lambda$364/1807421493::get$Lambda_[i];org/apache/cassandra/cql3/statements/SelectStatement$$Lambda$364/1807421493::<init>_[i]
+  
+awk '{ fNum = split(substr($0,0,length($0)-length($NF)),frames,";"); a[(frames[fNum-2] ";" frames[fNum-1] ";" frames[fNum])] += $NF } END { for (i in a) { printf "%-15s\t%s\n", a[i], i; } }' | sort -g -r

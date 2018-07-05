@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Sum up the samples from a collapsed stacks file being input via the standard input.
+# Expected usage:
+# $ cat a.cstk | ./sum_samples
+# sum: 12345 
+awk -F " " '{ sum += $NF } END { printf "sum: %s\n", sum; }'

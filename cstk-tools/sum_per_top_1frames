@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Print the sum of samples per methods in descending order
+#
+# Expected usage (print top 20 hot methods):
+# $ cat a.collapsed | ./sum_per_top_1frames | head -n 20 
+# 17609  itable stub 
+# 12115  java/util/concurrent/ConcurrentSkipListMap::findPredecessor_[j] 
+# 9069   native_write_msr_safe_[k] 
+# 3535   org/apache/cassandra/dht/Murmur3Partitioner$LongToken::compareTo_[i] 
+# 2517   org/apache/cassandra/db/DecoratedKey::compareTo_[j] 
+# 2262   org/apache/cassandra/db/ClusteringComparator::compare_[j] 
+# 2172   org/apache/cassandra/concurrent/TPC::getCoreId_[i] 
+# 2069   org/apache/cassandra/utils/concurrent/LongAdder::add_[i] 
+# 2051   vtable stub 
+# 1871   io/netty/util/Recycler$DefaultHandle::access$1100_[i] 
+# 1738   org/apache/cassandra/utils/flow/Flow$RequestLoopFlow::<init>_[i] 
+# 1610   java/util/concurrent/ConcurrentSkipListMap::doGet_[i] 
+# 1500   org/apache/cassandra/db/MemtableSubrange::get_[j] 
+# 1227   java/util/ArrayList::elementData_[i] 
+# 1223   org/apache/cassandra/db/partitions/AbstractBTreePartition$1::<init>_[i] 
+# 1207   io/netty/util/concurrent/FastThreadLocal$1::<init>_[i] 
+# 1198   org/apache/cassandra/db/ReadExecutionController::startIfValid_[i] 
+# 1090   com/google/common/collect/FluentIterable::<init>_[i] 
+# 1068   java/util/ArrayList::<init>_[i] 
+# 1052   java/util/concurrent/CompletableFuture::postComplete_[i]
+
+awk '{ fNum = split(substr($0,0,length($0)-length($NF)),frames,";"); a[frames[fNum]] += $NF } END { for (i in a) { printf "%-15s\t%s\n", a[i], i; } }' | sort -g -r

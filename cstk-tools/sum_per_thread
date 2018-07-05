@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Sum of samples per thread in descending order
+awk -F "[;| ]" '{ a[$1] += $NF } END { for (i in a) { printf "%-15s\t%s\n", a[i], i; } }' | sort -r -g
+
